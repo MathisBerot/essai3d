@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher Suzanne avec Babylon.js</title>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas> <!-- Conteneur pour la scène Babylon.js -->
+
+    <!-- Ajout de Babylon.js depuis un CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script> <!-- Chargeur pour GLTF/GLB -->
+
+    <script>
+        // Initialisation de Babylon.js
+        const canvas = document.getElementById('renderCanvas'); // Le canvas où on va afficher la scène
+        const engine = new BABYLON.Engine(canvas, true); // Créer l'engin Babylon.js
+
+        const createScene = () => {
+            const scene = new BABYLON.Scene(engine); // Créer la scène
+
+            // Ajouter une caméra ArcRotate (caméra orbitale)
+            const camera = new BABYLON.ArcRotateCamera('camera', Math.PI / 2, Math.PI / 2, 4, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true); // Permet de contrôler la caméra avec la souris
+
+            // Ajouter une lumière directionnelle pour éclairer le modèle
+            const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 1, 0), scene);
+            light.intensity = 0.7;
+
+            // Charger le modèle GLB
+            BABYLON.SceneLoader.Append('', 'planete.glb', scene, function (scene) {
+                // Le modèle est ajouté à la scène automatiquement
+                console.log('Modèle chargé avec succès');
+            }, null, function (scene, message) {
+                console.error('Erreur de chargement du modèle :', message);
+            });
+
+            return scene;
+        };
+
+        const scene = createScene(); // Créer la scène
+
+        // Boucle de rendu
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        // Ajuster le rendu si la fenêtre est redimensionnée
+        window.addEventListener('resize', () => {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
